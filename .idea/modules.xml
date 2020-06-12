@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Android-Sipo-master.iml" filepath="$PROJECT_DIR$/Android-Sipo-master.iml" group="Android-Sipo-master" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Android-Sipo-master/app" />
+    </modules>
+  </component>
+</project>

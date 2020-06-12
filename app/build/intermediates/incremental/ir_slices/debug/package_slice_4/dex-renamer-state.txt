@@ -1,0 +1,4 @@
+#Tue Nov 13 11:50:14 BDT 2018
+base.0=/Users/spondon/Documents/PersonalProjects/sipo/app/build/intermediates/transforms/dexMerger/debug/56
+path.0=classes.dex
+renamed.0=classes.dex

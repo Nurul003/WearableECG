@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+
+xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/uv"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="Real Time ECG Plot"
+        android:textColor="@android:color/white"
+        android:textSize="30dp" />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart1"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_alignBaseline="@+id/textView3"/>
+
+    <TextView
+        android:id="@+id/sensorvalue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="224dp"
+        android:textColor="@android:color/white"
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/tvTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="107dp"
+        android:text="00:00:00"
+        android:textColor="@android:color/white"
+        android:textSize="45dp" />
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="84dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:layout_toStartOf="@+id/textView3"
+        android:background="@color/colorAccent"
+        android:onClick="start"
+        android:text="Start"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/btReset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/start"
+        android:layout_toEndOf="@+id/textView3"
+        android:background="@color/colorAccent"
+        android:onClick="reset"
+        android:text="Reset"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/btPause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/start"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorAccent"
+        android:onClick="setPause"
+        android:text="Pause"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/measure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tvTimer"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorAccent"
+        android:onClick="getSensorData"
+        android:text="Measure"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/disconnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/colorAccent"
+        android:onClick="disconnect"
+        android:text="Logout"
+        android:textColor="@android:color/white" />
+
+
+</RelativeLayout>
