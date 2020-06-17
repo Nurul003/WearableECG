@@ -4,12 +4,12 @@
         "source": "D:\\Android-Sipo-master\\app\\src\\main\\res\\drawable\\step2.png"
     },
     {
-        "merged": "D:\\Android-Sipo-master\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "D:\\Android-Sipo-master\\app\\src\\main\\res\\mipmap-anydpi-v26\\ic_launcher_round.xml"
-    },
-    {
         "merged": "D:\\Android-Sipo-master\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xxxhdpi_ic_launcher.png.flat",
         "source": "D:\\Android-Sipo-master\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "D:\\Android-Sipo-master\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "D:\\Android-Sipo-master\\app\\src\\main\\res\\mipmap-anydpi-v26\\ic_launcher_round.xml"
     },
     {
         "merged": "D:\\Android-Sipo-master\\app\\build\\intermediates\\res\\merged\\debug\\layout_instructions.xml.flat",

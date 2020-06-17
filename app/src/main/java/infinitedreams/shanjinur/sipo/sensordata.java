@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -38,9 +39,13 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
+import org.tensorflow.lite.Interpreter;
 import org.w3c.dom.Text;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
@@ -51,6 +56,9 @@ public class sensordata extends Activity {
     AtomicBoolean atomicBoolean ;
     String address = null;
     private ProgressDialog progress;
+    public float[] dataArray= new float[698];
+    public int counter=0;
+    private Interpreter tfLite;
     long MillisecondTime, StartTime, TimeBuff, UpdateTime = 0L ;
     Handler handler;
     int Seconds, Minutes, MilliSeconds ;
@@ -69,7 +77,19 @@ public class sensordata extends Activity {
     boolean sus ;
     private boolean plotData = true;
     boolean measured ;
+    private static final String LABEL_FILENAME = "file:///android_asset/labels.txt";
+    private static final String MODEL_FILENAME = "file:///android_asset/ecgmodel.tflite";
     static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
+    private static MappedByteBuffer loadModelFile(AssetManager assets, String modelFilename)
+            throws IOException {
+        AssetFileDescriptor fileDescriptor = assets.openFd(modelFilename);
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredLength = fileDescriptor.getDeclaredLength();
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
         Context context = this ;
@@ -77,6 +97,12 @@ public class sensordata extends Activity {
         handler = new Handler() ;
         setContentView(R.layout.sensordata_layout);
 
+        String actualModelFilename = MODEL_FILENAME.split("file:///android_asset/", -1)[1];
+        try {
+            tfLite = new Interpreter(loadModelFile(getAssets(), actualModelFilename));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         mChart = (LineChart) findViewById(R.id.chart1);
 
         // enable description text
@@ -170,11 +196,12 @@ public class sensordata extends Activity {
                     public void run() {
                         while (true){
                             try {
-                                Thread.sleep(10);
+                                Thread.sleep(1);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                             int soun = 0 ;
+                            float ip=0;
                             int c=0;
                             if (btSocket!=null)
                             {
@@ -184,10 +211,17 @@ public class sensordata extends Activity {
                                     btSocket.getOutputStream().write("1".getBytes()) ;
                                     int b1 = btSocket.getInputStream().read() ;
                                     int b2 = btSocket.getInputStream().read() ;
-                                    soun = b2 + b1*256 ;
+                                    soun = b2 + b1*256;
+                                    ip=soun;
+                                    dataArray[counter] = ip;
+                                    counter++;
                                     //Toast.makeText(getApplicationContext(),String.valueOf(soun),Toast.LENGTH_SHORT).show();
-                                    System.out.println("ji"+soun);
+                                    if(counter%100==0) System.out.println("ji"+soun);
                                     addEntry(soun);
+                                    if(counter==697){
+                                        counter=0;
+                                        classifier(dataArray);
+                                    }
                                     //classify()
                                     final int finalSoun = soun ;
 //                                    runOnUiThread(new Runnable() {
@@ -268,7 +302,7 @@ public class sensordata extends Activity {
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
+
                         e.printStackTrace();
                     }
                 }
@@ -301,7 +335,16 @@ public class sensordata extends Activity {
             }
         }
     }
-
+    private void classifier(float[] test){
+        float[][][] sensordata=new float[1][698][1];
+        //ip=test;
+        for(int i=0;i<698;i++){
+            sensordata[0][i][0]=test[i];
+        }
+        float[] []yPredict=new float[1][14];
+        tfLite.run(sensordata,yPredict);
+        System.out.println(yPredict[0][1]);
+    }
     // fast way to call Toast
     public void msg(String s)
     {
@@ -407,6 +450,7 @@ public class sensordata extends Activity {
             progress = ProgressDialog.show(sensordata.this, "Connecting...", "Please wait!!!");  //show a progress dialog
         }
 
+        @SuppressLint("MissingPermission")
         @Override
         protected Void doInBackground(Void... devices) //while the progress dialog is shown, the connection is done in background
         {

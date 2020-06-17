@@ -1,1 +1,28 @@
-[{"outputType":{"type":"PROCESSED_RES"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"app-debug.apk","fullName":"debug","baseName":"debug","dirName":""},"path":"resources-debug.ap_","properties":{"packageId":"infinitedreams.shanjinur.sipo","split":"","minSdkVersion":"17"}}]
+{
+  "version": 1,
+  "applicationId": "infinitedreams.shanjinur.sipo",
+  "variantType": "BASE_APK",
+  "elements": [
+    {
+      "outputType": {
+        "type": "PROCESSED_RES"
+      },
+      "apkData": {
+        "type": "MAIN",
+        "splits": [],
+        "versionCode": 1,
+        "versionName": "1.0",
+        "outputFile": "app-debug.apk",
+        "fullName": "debug",
+        "baseName": "debug",
+        "dirName": ""
+      },
+      "path": "resources-debug.ap_",
+      "properties": {
+        "packageId": "infinitedreams.shanjinur.sipo",
+        "split": "",
+        "minSdkVersion": "19"
+      }
+    }
+  ]
+}
