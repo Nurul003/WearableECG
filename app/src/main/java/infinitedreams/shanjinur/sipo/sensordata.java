@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -38,9 +39,13 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
+import org.tensorflow.lite.Interpreter;
 import org.w3c.dom.Text;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
@@ -51,6 +56,10 @@ public class sensordata extends Activity {
     AtomicBoolean atomicBoolean ;
     String address = null;
     private ProgressDialog progress;
+    int arrayLength=698;
+    float[] dataArray=new float[arrayLength];
+    int counter=0;
+    Interpreter tfLite;
     long MillisecondTime, StartTime, TimeBuff, UpdateTime = 0L ;
     Handler handler;
     int Seconds, Minutes, MilliSeconds ;
@@ -69,6 +78,8 @@ public class sensordata extends Activity {
     boolean sus ;
     private boolean plotData = true;
     boolean measured ;
+    private static final String LABEL_FILENAME = "file:///android_asset/labels.txt";
+    private static final String MODEL_FILENAME = "file:///android_asset/model.tflite";
     static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +87,12 @@ public class sensordata extends Activity {
         super.onCreate(savedInstanceState);
         handler = new Handler() ;
         setContentView(R.layout.sensordata_layout);
+        String actualModelFilename = MODEL_FILENAME.split("file:///android_asset/", -1)[1];
+        try {
+            tfLite = new Interpreter(loadModelFile(getAssets(), actualModelFilename));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         mChart = (LineChart) findViewById(R.id.chart1);
 
@@ -175,6 +192,7 @@ public class sensordata extends Activity {
                                 e.printStackTrace();
                             }
                             int soun = 0 ;
+                            float input=soun;
                             int c=0;
                             if (btSocket!=null)
                             {
@@ -185,9 +203,15 @@ public class sensordata extends Activity {
                                     int b1 = btSocket.getInputStream().read() ;
                                     int b2 = btSocket.getInputStream().read() ;
                                     soun = b2 + b1*256 ;
+                                    dataArray[counter]=soun;
+                                    counter++;
                                     //Toast.makeText(getApplicationContext(),String.valueOf(soun),Toast.LENGTH_SHORT).show();
                                     System.out.println("ji"+soun);
                                     addEntry(soun);
+                                    if(counter==(arrayLength-1)){
+                                        classifier(dataArray);
+                                        counter=0;
+                                    }
                                     //classify()
                                     final int finalSoun = soun ;
 //                                    runOnUiThread(new Runnable() {
@@ -276,6 +300,24 @@ public class sensordata extends Activity {
         });
 
         thread.start();
+    }
+    private void classifier(float[] test){
+        float[][][] sensorData=new float[1][arrayLength][1];
+        for(int i=0;i<698;i++)
+            sensorData[0][i][0]=test[i];
+        float[][] yPredict=new float[1][14];
+        tfLite.run(sensorData,yPredict);
+        for(int j=0;j<14;j++)
+            System.out.println(yPredict[0][j]);
+    }
+    private static MappedByteBuffer loadModelFile(AssetManager assets, String modelFilename)
+            throws IOException {
+        AssetFileDescriptor fileDescriptor = assets.openFd(modelFilename);
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredLength = fileDescriptor.getDeclaredLength();
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
     }
 
     public void getSensorData(View view)
