@@ -1,0 +1,14 @@
+Normal Sinus Rhythm
+Atrial Bigeminy
+Atrial fibrillation
+Atrial flutter
+Ventricular bigeminy
+2° heart block
+Ventricular trigeminy
+Ventricular flutter
+Ventricular tachycardia
+Supraventricular tachyarrhythmia
+Idioventricular rhythm
+Paced rhythm
+Sinus bradycardia
+Nodal (A-V junctional) rhythm
